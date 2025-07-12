@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-g">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لیست کارها</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 700px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #4a4a4a; }
+        ul { list-style-type: none; padding: 0; }
+        li { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd; }
+        li:last-child { border-bottom: none; }
+        li.completed span { text-decoration: line-through; color: #999; }
+        .task-title { font-weight: bold; }
+        .actions form { display: inline-block; margin-left: 10px; }
+        button { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        button.toggle { background: #28a745; }
+        form.add-task { display: flex; margin-top: 20px; }
+        input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button[type="submit"] { background: #007bff; padding: 10px 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>لیست کارهای من</h1>
+
+        <form class="add-task" method="POST" action="{% url 'task-create' %}">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="یک کار جدید اضافه کنید..." required>
+            <button type="submit">افزودن</button>
+        </form>
+
+        <ul>
+            {% for task in tasks %}
+                <li class="{% if task.completed %}completed{% endif %}">
+                    <span class="task-title">{{ task.title }}</span>
+                    <div class="actions">
+                        <form method="POST" action="{% url 'task-toggle' task.id %}">
+                            {% csrf_token %}
+                            <button class="toggle" type="submit">
+                                {% if task.completed %}انجام‌نشده{% else %}انجام شد{% endif %}
+                            </button>
+                        </form>
+                        <form method="POST" action="{% url 'task-delete' task.id %}">
+                            {% csrf_token %}
+                            <button type="submit">حذف</button>
+                        </form>
+                    </div>
+                </li>
+            {% empty %}
+                <li>هنوز کاری ثبت نشده است.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
